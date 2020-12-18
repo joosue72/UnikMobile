@@ -52,6 +52,7 @@ String category="Piedras", nuevaCategoria;
 class _VistaCalidadState extends State<VistaCalidad> {
   Future _getImage() async{
     
+  // ignore: deprecated_member_use
   var selectedImage = await ImagePicker.pickImage(source: ImageSource.camera);
 
   

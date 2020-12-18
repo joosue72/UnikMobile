@@ -1,11 +1,9 @@
   
 
-import 'package:argon_buttons_flutter/argon_buttons_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:unik_inv/GastosRapidos/category_selection_widget.dart';
 import 'package:flutter/material.dart';
@@ -280,6 +278,10 @@ Future<String>uploadImage() async{
 )..show(context);
 _cantidadProducto.text="";
 value=0;
+url ="";
+setState(() {
+  
+});
      
   
               } else {
@@ -321,7 +323,7 @@ value=0;
 
         }),
         Text('Agrega un Gasto', style: TextStyle(fontSize: 18.0,fontWeight: FontWeight.w900),),
-        IconButton(icon: Icon(Icons.camera, color: Colors.black), onPressed: (){
+        IconButton(icon: Icon(Icons.camera_alt, color: Colors.black), onPressed: (){
 
              _getImage();   
 

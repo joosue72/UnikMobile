@@ -8,7 +8,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:custom_dropdown/custom_dropdown.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:neumorphic/neumorphic.dart';
+
 // ignore: avoid_web_libraries_in_flutter
 import 'package:path/path.dart' as s;
 import 'package:uuid/uuid.dart';
@@ -303,6 +303,7 @@ StreamBuilder<QuerySnapshot>(
                                   style: TextStyle(color: Colors.black),
                                 ),
                               );
+                              // ignore: deprecated_member_use
                               Scaffold.of(context).showSnackBar(snackBar);
                               
                               setState(() {

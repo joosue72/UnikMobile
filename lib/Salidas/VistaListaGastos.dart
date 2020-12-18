@@ -1,4 +1,5 @@
 
+import 'package:calendar_timeline/calendar_timeline.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -31,6 +32,9 @@ String hora = DateFormat('yyyy-MM-dd').format(now);
 final db = FirebaseFirestore.instance;
 DocumentSnapshot doc;
 
+//variables fecha
+
+
 var downUrl;
 //Variables de edicion de inventario
 String producto;
@@ -41,19 +45,23 @@ String filename;
 //Agregar Inventario
 dynamic cantidadInventario, agregado;
 //TextEditingController _textFieldCantidad = TextEditingController();
-int dia, mes;
+int dia, mes, year;
 String idimagen;
 
 //Selector
 String category="Piedras", nuevaCategoria;
 
 
+
 class _VistaListaGastosState extends State<VistaListaGastos> {
 
-  DateTime _dateTime;  
+
+
+
 
   Future _getImage() async{
     
+  // ignore: deprecated_member_use
   var selectedImage = await ImagePicker.pickImage(source: ImageSource.camera);
 
   
@@ -90,9 +98,14 @@ subirimagen(){
 
 
   @override
+
   Widget build(BuildContext context) {
 
 
+supportedLocales: [
+        const Locale('es'),
+        const Locale('en'),
+      ];
 
     return Scaffold(
       body: Stack(
@@ -183,34 +196,35 @@ subirimagen(){
                       scrollDirection: Axis.vertical,
                       
                       children: <Widget>[
-                        RaisedButton(
-            child: Text('Pick a date'),
-            onPressed: (){
-              showDatePicker(
+                        CalendarTimeline(
+              showYears: true,
+              initialDate: DateTime.now(),
               
-                context: context,
-                initialDate: DateTime.now(),
-                firstDate: DateTime(2020),
-                lastDate: DateTime(2022)
-              ).then((date){
-               
+              firstDate: DateTime(2020, 1, 1),
+              lastDate: DateTime.now().add(Duration(days: 900)),
+              onDateSelected: (date) {
                 setState(() {
-                     dia = int.parse(date.day.toString());
-                mes = int.parse(date.month.toString());
+                  year = int.parse(date.year.toString());
+                  dia = int.parse(date.day.toString());
+                  mes = int.parse(date.month.toString());
+                  print(dia.toString()+" "+mes.toString());
                 });
-                
+              },
+              leftMargin: 20,
+              monthColor: Colors.white70,
+              dayColor: Colors.teal[200],
+              dayNameColor: Color(0xFF333A47),
+              activeDayColor: Colors.white,
+              activeBackgroundDayColor: Colors.redAccent[100],
+              dotsColor: Color(0xFF333A47),
               
-               
-                   print(dia);
-                  print(mes);
-
-              });
-            },
-          ),
+              selectableDayPredicate: (date) => date.day != 23,
+              locale: 'es',
+            ),
                              
                         StreamBuilder<QuerySnapshot>(
                           
-            stream: db.collection('Gastos').where("Mes", isEqualTo: mes).where("Dia", isEqualTo: dia).snapshots(),
+            stream: db.collection('Gastos').where("Mes", isEqualTo: mes).where("Dia", isEqualTo: dia).where("Año", isEqualTo: year).snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return Column(children: snapshot.data.docs.map<Widget>((doc) => _buildListItem(doc)).toList());

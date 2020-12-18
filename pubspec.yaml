@@ -38,7 +38,7 @@ dependencies:
   lite_rolling_switch:
   flushbar:
   bubble_bottom_bar:
-  neumorphic:
+
   provider:
   flutter_slidable:
   giffy_dialog:
@@ -51,6 +51,7 @@ dependencies:
   rflutter_alert: 
   uuid:
   flutter_switch:
+  calendar_timeline:
   
 
 
