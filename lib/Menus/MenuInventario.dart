@@ -227,7 +227,7 @@ _buildRegistroInventarioDanado(String imgPath, String country, String descriptio
                     InkWell(
                         onTap: () {
                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) =>  CrearProducto()));
+                            builder: (context) =>  CrearProductoDa()));
                         },
                         child: Container(
                             height: 50.0,

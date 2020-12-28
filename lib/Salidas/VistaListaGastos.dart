@@ -10,6 +10,8 @@ import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as s;
+import 'package:intl/date_symbol_data_local.dart';
+
 
 
 
@@ -101,11 +103,7 @@ subirimagen(){
 
   Widget build(BuildContext context) {
 
-
-supportedLocales: [
-        const Locale('es'),
-        const Locale('en'),
-      ];
+    initializeDateFormatting('pt_BR', null);
 
     return Scaffold(
       body: Stack(

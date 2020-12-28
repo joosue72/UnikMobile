@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:unik_inv/Entradas/Login.dart';
 import 'package:unik_inv/GastosRapidos/add_page.dart';
 import 'package:unik_inv/Salidas/VistaListaGastos.dart';
+import 'package:unik_inv/Salidas/VistaProovedorCompras.dart';
 
  class MenuCompras extends StatefulWidget {
   MenuCompras({Key key}) : super(key: key);
@@ -87,6 +88,8 @@ class _MenuComprasState extends State<MenuCompras> {
                     'Agregue Sus Gastos'),
                     _buildListaGastos('assets/inventariounik.jpg', 'Lista de Gastos',
                     ''),
+                    _buildListCompras('https://firebasestorage.googleapis.com/v0/b/unik-b4f2f.appspot.com/o/Menu%2Fproducto.jpg?alt=media&token=18c59919-81d3-486c-93d2-029925d4b031', 'Productos',
+                    'Ver Los Productos de sus Proveedores'),
                    
                     
               ],
@@ -99,7 +102,62 @@ class _MenuComprasState extends State<MenuCompras> {
     );
   }
   
-  
+  _buildListCompras(String imgPath, String country, String description) {
+    return Padding(
+        padding: EdgeInsets.all(15.0),
+        child: Stack(
+          children: <Widget>[
+            Container(height: 300.0),
+            Container(
+              height: 300.0,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
+                  image: DecorationImage(
+                      image: NetworkImage(imgPath),
+                      fit: BoxFit.cover,
+                      colorFilter: ColorFilter.mode(
+                          Colors.black.withOpacity(0.6), BlendMode.darken))),
+            ),
+            Container(
+                height: 300.0,
+                child: Center(
+                    child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(country,
+                        style: GoogleFonts.montserrat(
+                            fontSize: 30.0,
+                            fontWeight: FontWeight.bold,
+                            textStyle: TextStyle(color: Colors.white))),
+                    Text(description,
+                        style: GoogleFonts.montserrat(
+                            fontSize: 15.0,
+                            fontWeight: FontWeight.w400,
+                            textStyle: TextStyle(color: Colors.white))),
+                    SizedBox(height: 20.0),
+                    InkWell(
+                        onTap: () {
+                         Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) =>  VistaProovedorCompras(imgPath: imgPath, title: country,)));
+                        },
+                        child: Container(
+                            height: 50.0,
+                            width: 125.0,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10.0),
+                                color: Colors.white),
+                            child: Center(
+                                child: Text('Entrar',
+                                    style: GoogleFonts.montserrat(
+                                        fontSize: 12.0,
+                                        fontWeight: FontWeight.bold,
+                                        textStyle: TextStyle(
+                                            color: Color(0xDD000000)))))))
+                  ],
+                )))
+          ],
+        ));
+  }
    
    _buildListGastos(String imgPath, String country, String description) {
     return Padding(

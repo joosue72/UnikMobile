@@ -1,5 +1,5 @@
 
-import 'package:firebase_storage/firebase_storage.dart';
+
 import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
@@ -7,37 +7,40 @@ import 'package:flushbar/flushbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:custom_dropdown/custom_dropdown.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart';
-
-// ignore: avoid_web_libraries_in_flutter
-import 'package:path/path.dart' as s;
-import 'package:uuid/uuid.dart';
+import 'package:lite_rolling_switch/lite_rolling_switch.dart';
 
 
 
 
 
- class CrearProductoDa extends StatefulWidget {
-  CrearProductoDa({Key key}) : super(key: key);
+
+
+
+
+ class CrearProducto extends StatefulWidget {
+  CrearProducto({Key key}) : super(key: key);
 
   @override
-  _CrearProductoDaState createState() => _CrearProductoDaState();
+  _CrearProductoState createState() => _CrearProductoState();
 }
 
 
 //Controllers de text
 TextEditingController _nombreProducto = TextEditingController();
-TextEditingController _cantidadProducto = TextEditingController();
-TextEditingController _descripcion = TextEditingController();
+TextEditingController _pesoProducto = TextEditingController();
+TextEditingController _precioProducto = TextEditingController();
 
 TextEditingController nombre = TextEditingController();
 
+
+//fiscal
+String fiscal="";
 
 
 //Variables Firebase
 var selectedCurrency;
 final db = FirebaseFirestore.instance;
-dynamic nombreProd, canProd, cantidadProd2,descripcion;
+dynamic nombreProd, canProd, pesoProd;
 dynamic cantidadProd;
 dynamic codigo, telefono, correo, idPro;
 dynamic codigoGen;
@@ -45,19 +48,20 @@ dynamic categoria, unidad, ubicacion;
 dynamic _checkboxValue;
 dynamic switchValue, selected;
 DocumentSnapshot doc;
-dynamic image;
-dynamic url2;
-String filename;
+int codigoNuevo;
+dynamic _checkboxValue2;
+dynamic precio, precioiva;
 
 
 
-class _CrearProductoDaState extends State<CrearProductoDa> {
+
+class _CrearProductoState extends State<CrearProducto> {
 
 
- @override
+   @override
  void initState() { 
    super.initState();
-    db
+    FirebaseFirestore.instance
                 .collection('Codigos')
                 .snapshots()
                 .listen((result) {
@@ -71,43 +75,6 @@ class _CrearProductoDaState extends State<CrearProductoDa> {
                 });
  }
 
- Future _getImage() async{
-  // ignore: deprecated_member_use
-  var selectedImage = await ImagePicker.pickImage(source: ImageSource.camera);
-
-  
-
-    setState(() {
-        image = selectedImage;
-        filename = s.basename(image.path);
-        uploadImage();
-        });
-      
-    
-    
-}
-
- Widget uploadArea(){
-
-  return Column(
-    children:<Widget>[
-      Image.file(image,width:double.infinity),
-
-    ],
-  );
-
-}
-
-Future<String>uploadImage() async{
-  Reference ref = FirebaseStorage.instance.ref().child(filename);
-  UploadTask uploadTask = ref.putFile(image);
-
-  var downUrl = await(await uploadTask).ref.getDownloadURL();
-  var url = downUrl.toString();
-  print("Download URL : $url");
-  url2 = url;
-  return url;
-}
 
 
   @override
@@ -118,147 +85,15 @@ Future<String>uploadImage() async{
 
     return Scaffold(
       appBar: _getCustomAppBar(),
-      
-       body: Padding(
-         
-         padding: const EdgeInsets.all(18.0),
-         child: ListView(
-          
+       body:  Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
            children: <Widget>[
              
-              
-           
-             SizedBox(height:10),
-                image==null?Text("Selecciona una imagen"): uploadArea(),
-             
           
              
-             SizedBox(height:40),
-             CustomDropdown(
-               enabledIconColor: Colors.black,
-        valueIndex: _checkboxValue,
-        hint: "Categoria",
-        items: [
-          CustomDropdownItem(text: "Cantera"),
-          CustomDropdownItem(text: "Cuarzo"),
-          CustomDropdownItem(text: "Deck"),
-          CustomDropdownItem(text: "Granito"),
-          CustomDropdownItem(text: "Marmol"),
-          CustomDropdownItem(text: "Piel de elefante"),
-          CustomDropdownItem(text: "Pisos"),
-          CustomDropdownItem(text: "Porfido"),
-          
-          
-        ],
-        onChanged: (newValue) {
-          setState(() => _checkboxValue = newValue);
-        },
-      ),
-      SizedBox(height:20),
-             Text("Nombre De Producto"),
-             SizedBox(height:10),
-             Container(
-               decoration: BoxDecoration(
-
-                 color: Color(0XFFEFF3F6),
-                 borderRadius: BorderRadius.circular(100.0),
-                 boxShadow: [
-                   BoxShadow(color: Color.fromRGBO(0, 0, 0, 0.1),
-                   offset: Offset(6,2),
-                   blurRadius: 6.0,
-                   spreadRadius: 3.0
-                   ),
-                    BoxShadow(color: Color.fromRGBO(255, 255, 255, 0.9),
-                   offset: Offset(-6,-2),
-                   blurRadius: 6.0,
-                   spreadRadius: 3.0
-                   )
-                 ]
-               ),
-               
-               child: TextField(
-                 controller: _nombreProducto,
-                 decoration: InputDecoration(
-                   border: InputBorder.none,
-                   hintText: "    Marmol Santo Tomas"
-                 ),
-               ),
-               
-               ),
-                SizedBox(height:20),
-             Text("Cantidad De Producto"),
-             SizedBox(height:10),
-             Container(
-               decoration: BoxDecoration(
-
-                 color: Color(0XFFEFF3F6),
-                 borderRadius: BorderRadius.circular(100.0),
-                 boxShadow: [
-                   BoxShadow(color: Color.fromRGBO(0, 0, 0, 0.1),
-                   offset: Offset(6,2),
-                   blurRadius: 6.0,
-                   spreadRadius: 3.0
-                   ),
-                    BoxShadow(color: Color.fromRGBO(255, 255, 255, 0.9),
-                   offset: Offset(-6,-2),
-                   blurRadius: 6.0,
-                   spreadRadius: 3.0
-                   )
-                 ]
-               ),
-               
-               child: TextField(
-                 controller: _cantidadProducto,
-                 decoration: InputDecoration(
-                   border: InputBorder.none,
-                   hintText: "    85.2 "
-                 ),
-               ),
-               
-               ),
-
-               SizedBox(height:20),
-                Text("Descripción"),
-               SizedBox(height:20),
-                
-                 Container(
-               decoration: BoxDecoration(
-
-                 color: Color(0XFFEFF3F6),
-                 borderRadius: BorderRadius.circular(10.0),
-                 boxShadow: [
-                   BoxShadow(color: Color.fromRGBO(0, 0, 0, 0.1),
-                   offset: Offset(3,2),
-                   blurRadius: 6.0,
-                   spreadRadius: 3.0
-                   ),
-                    BoxShadow(color: Color.fromRGBO(255, 255, 255, 0.9),
-                   offset: Offset(-6,-2),
-                   blurRadius: 6.0,
-                   spreadRadius: 1.0
-                   )
-                 ]
-               ),
-               
-               child: TextField(
-                 minLines: 5,
-                  maxLines: 15,
-                 controller: _descripcion,
-                 decoration: InputDecoration(
-                   border: InputBorder.none,
-                   hintText: "El producto contiene muchas piezas rotas."
-                 ),
-               ),
-               
-               ),
-                
-               
-                
-                SizedBox(height: 20,),
-                
-                    
-
-SizedBox(height: 10,),
+         
+             SizedBox(height: 10,),
 StreamBuilder<QuerySnapshot>(
                        
                   stream: db.collection('NombresProveedores').snapshots(),
@@ -342,20 +177,181 @@ StreamBuilder<QuerySnapshot>(
                     }
                     return CircularProgressIndicator();
                   }),
-             
-                SizedBox(height: 20,),
+                  SizedBox(height: 20,),
                 Text("Nombre del Proveedor: "+ nombre.text, style: GoogleFonts.montserrat(
                           fontSize: 16.0,
                           fontWeight: FontWeight.bold,
                           textStyle: TextStyle(color: Colors.black),
                         )),
-                SizedBox(height: 10,),
-
-SizedBox(height: 20.0,),
+             SizedBox(height: 20,),
+             CustomDropdown(
+               enabledIconColor: Colors.black,
+        valueIndex: _checkboxValue,
+        hint: "Categoria",
+        items: [
+          CustomDropdownItem(text: "Cantera"),
+          CustomDropdownItem(text: "Cuarzo"),
+          CustomDropdownItem(text: "Deck"),
+          CustomDropdownItem(text: "Granito"),
+          CustomDropdownItem(text: "Marmol"),
+          CustomDropdownItem(text: "Piel de elefante"),
+          CustomDropdownItem(text: "Pisos"),
+          CustomDropdownItem(text: "Porfido"),
+          
+          
+        ],
+        onChanged: (newValue) {
+          setState(() => _checkboxValue = newValue);
+        },
+      ),
+       SizedBox(height: 20.0,),
   
+               CustomDropdown(
+                    valueIndex: _checkboxValue2,
+                    enabledIconColor: Colors.black,
+                    hint: "Unidad De Medida",
+                    items: [
+                      CustomDropdownItem(text: "Caja"),
+                      CustomDropdownItem(text: "Pieza"),
+                      CustomDropdownItem(text: "Metros Cuadrados"),
+                      CustomDropdownItem(text: "Peso"), 
+                    ],
+                    onChanged: (newValue) {
+                      setState(() {
+                      
+                        _checkboxValue2 = newValue;
+                      } );
+                    },
+                  ),
+                
+      SizedBox(height:20),
+             Text("Nombre De Producto"),
+             SizedBox(height:10),
+             Container(
+               decoration: BoxDecoration(
+
+                 color: Color(0XFFEFF3F6),
+                 borderRadius: BorderRadius.circular(100.0),
+                 boxShadow: [
+                   BoxShadow(color: Color.fromRGBO(0, 0, 0, 0.1),
+                   offset: Offset(6,2),
+                   blurRadius: 6.0,
+                   spreadRadius: 3.0
+                   ),
+                    BoxShadow(color: Color.fromRGBO(255, 255, 255, 0.9),
+                   offset: Offset(-6,-2),
+                   blurRadius: 6.0,
+                   spreadRadius: 3.0
+                   )
+                 ]
+               ),
                
+               child: TextField(
+                 controller: _nombreProducto,
+                 decoration: InputDecoration(
+                   border: InputBorder.none,
+                   hintText: "    Marmol Santo Tomas"
+                 ),
+               ),
+               
+               ),
+                
+               
+                
+                SizedBox(height: 20,),
+                
                  SizedBox(height:20),
-                 
+             Text("Precio Del Producto"),
+             SizedBox(height:10),
+             Container(
+               decoration: BoxDecoration(
+
+                 color: Color(0XFFEFF3F6),
+                 borderRadius: BorderRadius.circular(100.0),
+                 boxShadow: [
+                   BoxShadow(color: Color.fromRGBO(0, 0, 0, 0.1),
+                   offset: Offset(6,2),
+                   blurRadius: 6.0,
+                   spreadRadius: 3.0
+                   ),
+                    BoxShadow(color: Color.fromRGBO(255, 255, 255, 0.9),
+                   offset: Offset(-6,-2),
+                   blurRadius: 6.0,
+                   spreadRadius: 3.0
+                   )
+                 ]
+               ),
+               
+               child: TextField(
+                 controller: _precioProducto,
+                 decoration: InputDecoration(
+                   border: InputBorder.none,
+                   hintText: "    Precio",
+                   suffixText: "\$"
+                 ),
+               ),
+               
+               ),
+               SizedBox(height:20),
+             Text("Peso del Producto"),
+             SizedBox(height:10),
+             Container(
+               decoration: BoxDecoration(
+
+                 color: Color(0XFFEFF3F6),
+                 borderRadius: BorderRadius.circular(100.0),
+                 boxShadow: [
+                   BoxShadow(color: Color.fromRGBO(0, 0, 0, 0.1),
+                   offset: Offset(6,2),
+                   blurRadius: 6.0,
+                   spreadRadius: 3.0
+                   ),
+                    BoxShadow(color: Color.fromRGBO(255, 255, 255, 0.9),
+                   offset: Offset(-6,-2),
+                   blurRadius: 6.0,
+                   spreadRadius: 3.0
+                   )
+                 ]
+               ),
+               
+               child: TextField(
+                 controller: _pesoProducto,
+                 decoration: InputDecoration(
+                   border: InputBorder.none,
+                   hintText: "     0",
+                   suffixText: "Kg"
+                 ),
+               ),
+               
+               ),
+                  SizedBox(height:20),
+                   
+
+                //switch
+                LiteRollingSwitch(
+    //initial value
+    value: false,
+    textOn: 'Iva',
+    textOff: 'Sin Iva',
+    colorOn: Colors.green[700].withOpacity(0.5),
+    colorOff: Colors.red[700].withOpacity(0.8),
+    iconOn: Icons.done,
+    iconOff: Icons.remove_circle_outline,
+    textSize: 16.0,
+    onChanged: (bool state) {
+      selected = state;
+      if(selected == true)
+      {
+        fiscal = "Iva";
+      }
+      else
+      {
+        fiscal = "Sin Iva";
+      }
+    },
+),
+SizedBox(height: 20,),
+
                  RaisedButton(
                    color: Colors.black87,
                    elevation: 5.0,
@@ -386,7 +382,7 @@ padding: EdgeInsets.all(20.0),
                      }
                     
                      print(telefono);
-                          db
+                     FirebaseFirestore.instance
                 .collection('Codigos')
                 .snapshots()
                 .listen((result) {
@@ -397,9 +393,9 @@ padding: EdgeInsets.all(20.0),
           
 
                     print("Codigo rd"+ codigo);
-                });
-                       
+                });    
 
+                
                
   if(_checkboxValue==0)
   {
@@ -450,31 +446,49 @@ padding: EdgeInsets.all(20.0),
     print("Codigo: "+codigoGen);
   }
   
-  
 
-  
-  switch(switchValue)
+    
+switch(_checkboxValue2)
   {
     case 0:
-    selected ="Fiscal";
+    unidad="Caja";
     break;
     case 1:
-    selected ="No Fiscal";
+    unidad="Pz";
     break;
+    case 2:
+    unidad="M2";
+    break;
+    case 3:
+    unidad="Peso";
+    break;
+  }
 
+  if(fiscal == "Iva")
+  {
+  precio = double.parse(_precioProducto.text.toString());
+  precioiva = precio;
+  precio = precio * 0.16;
+  precio += precioiva;
+  }
+  if(fiscal == "Sin Iva")
+  {
+    print(precio.toString());
+    precio = double.parse(_precioProducto.text.toString());
+  
+    print("Precio final: "+precio.toString());
   }
  
   nombreProd = _nombreProducto.text;
-  cantidadProd2 = _cantidadProducto.text;
-  descripcion = _descripcion.text;
-String uuid = Uuid().v4();
+  pesoProd = _pesoProducto.text;
  
   
-  FirebaseFirestore.instance.collection("Calidad").add({'Categoria': '$categoria','NombreProducto': '$nombreProd',  'Codigo': '$uuid', 'NombreProveedor': '$selectedCurrency', 'Telefono': '$telefono', 'Correo': '$correo', 'Id': '$idPro','Imagen': '$url2','Cantidad':'$cantidadProd2','Descripcion': '$descripcion'});
- 
+  FirebaseFirestore.instance.collection("Productos").add({'Categoria': '$categoria','NombreProducto': '$nombreProd',  'Codigo': '$codigoGen', 'Fiscal': '$fiscal', 'NombreProveedor': '$selectedCurrency',  'Id': '$idPro', 'UltimoPrecio':precio, 'Unidad': '$unidad', 'Peso': double.parse(pesoProd)});
+  codigoNuevo = int.parse(codigo)+1;
+  FirebaseFirestore.instance.collection('Codigos').doc('Cd').update({'Codigo': codigoNuevo});
  _nombreProducto.text="";
- _cantidadProducto.text ="";
- _descripcion.text = "";
+ _pesoProducto.text="";
+ _precioProducto.text="";
 
   Flushbar(
                    flushbarPosition: FlushbarPosition.TOP,
@@ -483,6 +497,9 @@ String uuid = Uuid().v4();
   duration: Duration(seconds: 3),
   isDismissible: false,
 )..show(context);
+setState(() {
+  
+});
 
   
  
@@ -499,13 +516,7 @@ String uuid = Uuid().v4();
            ],
          ),
          
-       ),
-
-        floatingActionButton: FloatingActionButton(
-          onPressed: _getImage,
-          tooltip: 'Agregar',
-          child: Icon(Icons.camera_alt),
-        ),
+       
         
     );
   }
@@ -541,12 +552,8 @@ String uuid = Uuid().v4();
           Navigator.pop(this.context);
 
         }),
-        Text('Agrega un Producto Dañado', style: TextStyle(fontSize: 17.0,fontWeight: FontWeight.w900),),
-        IconButton(icon: Icon(Icons.camera_alt_rounded , color: Colors.black), onPressed: (){
-
-          _getImage();
-
-        }),
+        Text('Agrega un Producto', style: TextStyle(fontSize: 24.0,fontWeight: FontWeight.w900),),
+        IconButton(icon: Icon(Icons.create, color: Colors.black), onPressed: (){}),
       ],),
     ),
   );
